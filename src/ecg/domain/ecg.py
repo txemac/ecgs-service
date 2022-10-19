@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel
 from pydantic.types import conint
@@ -14,12 +15,14 @@ class Channel(BaseModel):
 
 
 class ECG(BaseModel):
+    id: UUID
     date: datetime
     channels: conlist(item_type=Channel, min_items=1)
 
     class Config:
         schema_extra = dict(
             example=dict(
+                id="463b94cb-71e6-4fcb-bd52-d1b3288a2232",
                 date="2022-03-07 02:54:04",
                 channels=[
                     dict(

@@ -3,7 +3,7 @@ from typing import Dict
 
 import pytest as pytest
 
-from src.ecg.domain import ECG
+from src.ecg.domain.ecg import ECG
 
 
 @pytest.fixture

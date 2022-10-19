@@ -4,8 +4,8 @@ from typing import Dict
 import pytest
 from pydantic import ValidationError
 
-from src.ecg.domain import Channel
-from src.ecg.domain import ECG
+from src.ecg.domain.ecg import Channel
+from src.ecg.domain.ecg import ECG
 
 
 def test_channel_ok(
