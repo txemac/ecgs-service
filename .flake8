@@ -1,0 +1,8 @@
+[flake8]
+max-line-length = 120
+max-complexity = 10
+exclude =
+    .git,
+    .venv*,
+    .pytest_cache,
+    alembic_helper.py,
