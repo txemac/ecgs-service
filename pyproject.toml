@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "ecgs-service"
+version = "0.1.0"
+description = "ECGs service"
+authors = ["Txema Bermudez <txema.bermudez@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "ecgs_service" }]
+
+[tool.poetry.dependencies]
+python = "3.10.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
