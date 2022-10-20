@@ -51,6 +51,10 @@ class Channel(SQLModel, table=True):
     name: constr(min_length=1) = Field(primary_key=True, nullable=False)
     num_zero_crossing: conint(ge=0)
 
+    class Config:
+        orm_mode = True
+        read_with_orm_mode = True
+
 
 class ECG(SQLModel, table=True):
     __tablename__ = "ecg"
@@ -61,6 +65,30 @@ class ECG(SQLModel, table=True):
 
     channels: List[Channel] = Relationship(back_populates="ecg")
 
+    class Config:
+        orm_mode = True
+        read_with_orm_mode = True
+        schema_extra = dict(
+            example=dict(
+                id="463b94cb-71e6-4fcb-bd52-d1b3288a2232",
+                created_at="2022-10-20 12:34:56",
+                date="2022-10-20 12:34:55",
+                channels=[
+                    dict(
+                        name="I",
+                        num_zero_crossing=9,
+                    )
+                ]
+            )
+        )
+
 
 class ECGID(BaseModel):
     id: UUID4
+
+    class Config:
+        schema_extra = dict(
+            example=dict(
+                id="463b94cb-71e6-4fcb-bd52-d1b3288a2232",
+            )
+        )

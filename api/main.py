@@ -15,7 +15,7 @@ os.environ["TZ"] = "UTC"
 
 # create the api
 api = FastAPI(
-    title="ECG service",
+    title="ECG Service",
     version="1.0.0",
 )
 
@@ -31,7 +31,7 @@ class HealthOut(BaseModel):
     class Config:
         schema_extra = dict(
             example=dict(
-                message="OK",
+                message=f"{api.title} - OK",
                 version=api.version,
                 time=datetime.utcnow(),
             )
