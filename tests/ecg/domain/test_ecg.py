@@ -4,10 +4,10 @@ from typing import Dict
 import pytest
 from pydantic import ValidationError
 
-from src.ecg.domain.ecg import ChannelIn
-from src.ecg.domain.ecg import ChannelOut
-from src.ecg.domain.ecg import ECGIn
-from src.ecg.domain.ecg import ECGOut
+from api.ecg.domain.ecg import ChannelIn
+from api.ecg.domain.ecg import ChannelOut
+from api.ecg.domain.ecg import ECGIn
+from api.ecg.domain.ecg import ECGOut
 
 
 def test_channel_in_ok(

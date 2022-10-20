@@ -3,7 +3,7 @@ from typing import Dict
 
 import pytest as pytest
 
-from src.ecg.domain.ecg import ECGIn
+from api.ecg.domain.ecg import ECGIn
 
 
 @pytest.fixture
