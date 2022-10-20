@@ -3,9 +3,12 @@ from uuid import uuid4
 
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import HTTPException
+from pydantic.types import UUID4
 from sqlalchemy.orm import Session
 from starlette import status
 
+from api import messages
 from api.database import db_sql_session
 from api.depends import get_channel_repository
 from api.depends import get_ecg_repository
@@ -52,3 +55,28 @@ def create_ecg(
         channel_repository.create(db_sql, new_channel=new_channel)
 
     return ECGID(id=ecg.id)
+
+
+@ecgs_router.get(
+    path="/{ecg_id}",
+    name="Get one",
+    description="Get user info.",
+    status_code=status.HTTP_200_OK,
+    response_model=ECG,
+    responses={
+        404: {"description": messages.ECG_NOT_FOUND},
+    },
+)
+def get_one(
+        ecg_id: UUID4,
+        db_sql: Session = Depends(db_sql_session),
+        ecg_repository: ECGRepository = Depends(get_ecg_repository),
+) -> ECG:
+    logger.info(f"GET ECG. ecg_id: {ecg_id}")
+
+    ecg = ecg_repository.get_by_id(db_sql, ecg_id=ecg_id)
+    if not ecg:
+        logger.exception(f"{messages.ECG_NOT_FOUND} - ID: {ecg_id}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.ECG_NOT_FOUND)
+
+    return ecg
