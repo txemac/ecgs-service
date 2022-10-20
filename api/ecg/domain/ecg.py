@@ -62,13 +62,5 @@ class ECG(SQLModel, table=True):
     channels: List[Channel] = Relationship(back_populates="ecg")
 
 
-class ChannelOut(BaseModel):
-    name: constr(min_length=1)
-    num_zero_crossing: conint(ge=0)
-
-
-class ECGOut(BaseModel):
+class ECGID(BaseModel):
     id: UUID4
-    created_at: datetime
-    date: datetime
-    channels: conlist(item_type=ChannelOut, min_items=1)

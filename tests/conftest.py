@@ -12,17 +12,35 @@ from sqlalchemy_utils import database_exists
 from sqlmodel import Session
 from sqlmodel import create_engine
 from starlette.config import environ
+from starlette.testclient import TestClient
 
+from api.database import db_sql_session
 from api.ecg.domain.channel_repository import ChannelRepository
 from api.ecg.domain.ecg import Channel
 from api.ecg.domain.ecg import ECG
 from api.ecg.domain.ecg_repository import ECGRepository
 from api.ecg.infrastructure.repositories.sqlmodel_channel_repository import SQLModelChannelRepository
 from api.ecg.infrastructure.repositories.sqlmodel_ecg_repository import SQLModelECGRepository
+from api.main import api
 from api.settings import DATABASE_URL
 
 environ["TESTING"] = "True"
 logging.getLogger("alembic").setLevel(logging.ERROR)
+
+
+@pytest.fixture
+def client(
+        db_sql: Session,
+) -> Generator[TestClient, Any, None]:
+    def _get_test_db():
+        try:
+            yield db_sql
+        finally:
+            pass
+
+    api.dependency_overrides[db_sql_session] = _get_test_db
+    with TestClient(api) as client:
+        yield client
 
 
 @pytest.fixture(scope="session")
