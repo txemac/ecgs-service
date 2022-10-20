@@ -7,6 +7,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from starlette import status
 
+from api.ecg.infrastructure.views.ecg import ecgs_router
+
 logger = logging.getLogger(__name__)
 
 os.environ["TZ"] = "UTC"
@@ -16,6 +18,8 @@ api = FastAPI(
     title="ECG service",
     version="1.0.0",
 )
+
+api.include_router(ecgs_router, tags=["ECGs"], prefix="/ecgs")
 
 
 # health endpoint

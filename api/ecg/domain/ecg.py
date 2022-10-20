@@ -32,7 +32,7 @@ class ECGIn(BaseModel):
                     dict(
                         name="I",
                         num_samples=10,
-                        signal=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                        signal=[1, -2, 3, -4, 5, -6, 7, -8, 9, -10],
                     ),
                 ],
             ),
@@ -46,7 +46,7 @@ class Channel(SQLModel, table=True):
         UniqueConstraint('ecg_id', 'name', name='ck_channel_ecg_id_name'),
     )
 
-    ecg_id: UUID4 = Field(foreign_key="ecg.id", nullable=False, primary_key=True)
+    ecg_id: UUID4 = Field(foreign_key="ecg.id", nullable=False, primary_key=True, exclude=True)
     ecg: "ECG" = Relationship()  # noqa: F821
     name: constr(min_length=1) = Field(primary_key=True, nullable=False)
     num_zero_crossing: conint(ge=0)

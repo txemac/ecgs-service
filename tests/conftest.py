@@ -16,7 +16,6 @@ from starlette.testclient import TestClient
 
 from api.database import db_sql_session
 from api.ecg.domain.channel_repository import ChannelRepository
-from api.ecg.domain.ecg import Channel
 from api.ecg.domain.ecg import ECG
 from api.ecg.domain.ecg_repository import ECGRepository
 from api.ecg.infrastructure.repositories.sqlmodel_channel_repository import SQLModelChannelRepository
@@ -85,34 +84,25 @@ def channel_repository() -> ChannelRepository:
 @pytest.fixture
 def new_ecg_data() -> Dict:
     return dict(
-        date="2022-03-07 02:54:04",
+        date="2022-10-20 17:25:00",
+        channels=[
+            dict(
+                name="I",
+                num_samples=10,
+                signal=[1, -2, 3, -4, 5, -6, 7, -8, 9, -10],
+            ),
+        ],
     )
 
 
 @pytest.fixture
 def ecg_1(
+        client: TestClient,
         db_sql: Session,
-        ecg_repository: ECGRepository,
         new_ecg_data: Dict,
 ) -> ECG:
-    return ecg_repository.create(db_sql, new_ecg=ECG(**new_ecg_data))
-
-
-@pytest.fixture
-def new_channel_data(
-        ecg_1: ECG,
-) -> Dict:
-    return dict(
-        ecg_id=ecg_1.id,
-        name="II",
-        num_zero_crossing=17,
+    response = client.post(
+        url="/ecgs",
+        json=new_ecg_data,
     )
-
-
-@pytest.fixture
-def channel_1(
-        db_sql: Session,
-        channel_repository: ChannelRepository,
-        new_channel_data: Dict,
-) -> Channel:
-    return channel_repository.create(db_sql, new_channel=Channel(**new_channel_data))
+    return ECG(**response.json())
