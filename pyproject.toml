@@ -10,6 +10,7 @@ packages = [{ include = "ecgs_service" }]
 python = "3.10.7"
 fastapi = "0.85.1"
 pytest = "^7.1.3"
+sqlmodel = "^0.0.8"
 
 
 [tool.poetry.group.dev.dependencies]
