@@ -12,6 +12,7 @@ from api import messages
 from api.database import db_sql_session
 from api.depends import get_channel_repository
 from api.depends import get_ecg_repository
+from api.ecg.application.calculate_zero_crossing import calculate_zero_crossing
 from api.ecg.domain.channel_repository import ChannelRepository
 from api.ecg.domain.ecg import Channel
 from api.ecg.domain.ecg import ECG
@@ -49,8 +50,7 @@ def create_ecg(
         new_channel = Channel(
             ecg_id=ecg.id,
             name=channel.name,
-            # TODO: Calculate zero crossing
-            num_zero_crossing=0,
+            num_zero_crossing=calculate_zero_crossing(signal=channel.signal),
         )
         channel_repository.create(db_sql, new_channel=new_channel)
 
