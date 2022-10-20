@@ -47,6 +47,7 @@ class Channel(SQLModel, table=True):
     )
 
     ecg_id: UUID4 = Field(foreign_key="ecg.id", nullable=False, primary_key=True)
+    ecg: "ECG" = Relationship()  # noqa: F821
     name: constr(min_length=1) = Field(primary_key=True, nullable=False)
     num_zero_crossing: conint(ge=0)
 
@@ -55,7 +56,7 @@ class ECG(SQLModel, table=True):
     __tablename__ = "ecg"
 
     id: UUID4 = Field(default_factory=uuid4, primary_key=True)
-    created_at: datetime
+    created_at: datetime = datetime.utcnow()
     date: datetime
 
     channels: List[Channel] = Relationship(back_populates="ecg")

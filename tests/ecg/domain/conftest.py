@@ -1,47 +1,38 @@
-import logging
-from typing import Any
-from typing import Generator
+from copy import deepcopy
+from typing import Dict
 
 import pytest
-from alembic.command import downgrade
-from alembic.command import upgrade
-from alembic.config import Config
-from sqlalchemy_utils import create_database
-from sqlalchemy_utils import database_exists
-from sqlmodel import Session
-from sqlmodel import create_engine
-from starlette.config import environ
 
-from api.settings import DATABASE_URL
-
-environ["TESTING"] = "True"
-logging.getLogger("alembic").setLevel(logging.ERROR)
-
-
-@pytest.fixture(scope="session")
-def db_engine():
-    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-    if not database_exists(engine.url):
-        create_database(engine.url)
-    return engine
-
-
-@pytest.fixture(scope="session")
-def db_migrations(db_engine) -> None:
-    config = Config("alembic.ini")
-    upgrade(config, "head")
-    yield
-    downgrade(config, "base")
+from api.ecg.domain.ecg import ECGIn
 
 
 @pytest.fixture
-def db_sql(db_engine, db_migrations) -> Generator[Session, Any, None]:
-    connection = db_engine.connect()
-    transaction = connection.begin()
-    session = Session(bind=connection)
+def new_ecg_in_data() -> Dict:
+    return deepcopy(ECGIn.Config.schema_extra.get("example"))
 
-    yield session
 
-    session.close()
-    transaction.rollback()
-    connection.close()
+@pytest.fixture
+def new_channel_in_data(
+        new_ecg_in_data: Dict,
+) -> Dict:
+    return new_ecg_in_data["channels"][0]
+
+
+@pytest.fixture
+def new_channel_out_data() -> Dict:
+    return dict(
+        name="II",
+        num_zero_crossing=17,
+    )
+
+
+@pytest.fixture
+def new_ecg_out_data(
+        new_channel_out_data: Dict,
+) -> Dict:
+    return dict(
+        id="463b94cb-71e6-4fcb-bd52-d1b3288a2232",
+        created_at="2022-03-09 01:23:45",
+        date="2022-03-07 02:54:04",
+        channels=[new_channel_out_data],
+    )
