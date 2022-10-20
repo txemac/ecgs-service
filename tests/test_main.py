@@ -13,7 +13,7 @@ def test_health(
     )
     assert response.status_code == status.HTTP_200_OK
     expected = dict(
-        message="OK",
+        message=f"{api.title} - OK",
         version=api.version,
         time="*",
     )

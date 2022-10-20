@@ -44,7 +44,7 @@ class HealthOut(BaseModel):
 def health() -> Dict:
     logger.info(f"GET Health")
     return dict(
-        message="OK",
+        message=f"{api.title} - OK",
         version=api.version,
         time=datetime.utcnow(),
     )
