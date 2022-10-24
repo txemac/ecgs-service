@@ -6,6 +6,7 @@ from pydantic import UUID4
 from sqlmodel import Session
 
 from api.ecg.domain.ecg import ECG
+from api.ecg.domain.ecg import ECGOutWithChannels
 
 
 class ECGRepository(ABC):
@@ -43,7 +44,7 @@ class ECGRepository(ABC):
     def get_by_id(
             db_sql: Session,
             ecg_id: UUID4,
-    ) -> Optional[ECG]:
+    ) -> Optional[ECGOutWithChannels]:
         """
         Searches for a persisted ECG by ID and returns it if it exists.
 

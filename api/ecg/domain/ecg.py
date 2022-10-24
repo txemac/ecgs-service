@@ -56,12 +56,14 @@ class Channel(SQLModel, table=True):
         read_with_orm_mode = True
 
 
-class ECG(SQLModel, table=True):
-    __tablename__ = "ecg"
-
+class ECGBase(SQLModel):
     id: UUID4 = Field(default_factory=uuid4, primary_key=True)
     created_at: datetime = datetime.utcnow()
     date: datetime
+
+
+class ECG(ECGBase, table=True):
+    __tablename__ = "ecg"
 
     channels: List[Channel] = Relationship(back_populates="ecg")
 
@@ -81,6 +83,13 @@ class ECG(SQLModel, table=True):
                 ]
             )
         )
+
+
+class ECGOutWithChannels(ECGBase):
+    channels: List[Channel] = []
+
+
+ECGOutWithChannels.update_forward_refs()
 
 
 class ECGID(BaseModel):

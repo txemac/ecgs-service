@@ -18,6 +18,7 @@ from api.ecg.domain.ecg import Channel
 from api.ecg.domain.ecg import ECG
 from api.ecg.domain.ecg import ECGID
 from api.ecg.domain.ecg import ECGIn
+from api.ecg.domain.ecg import ECGOutWithChannels
 from api.ecg.domain.ecg_repository import ECGRepository
 
 logger = logging.getLogger(__name__)
@@ -62,7 +63,7 @@ def create_ecg(
     name="Get one",
     description="Get user info.",
     status_code=status.HTTP_200_OK,
-    response_model=ECG,
+    response_model=ECGOutWithChannels,
     responses={
         404: {"description": messages.ECG_NOT_FOUND},
     },
@@ -71,7 +72,7 @@ def get_one(
         ecg_id: UUID4,
         db_sql: Session = Depends(db_sql_session),
         ecg_repository: ECGRepository = Depends(get_ecg_repository),
-) -> ECG:
+) -> ECGOutWithChannels:
     logger.info(f"GET ECG. ecg_id: {ecg_id}")
 
     ecg = ecg_repository.get_by_id(db_sql, ecg_id=ecg_id)
