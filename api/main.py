@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from starlette import status
 
 from api.ecg.infrastructure.views.ecg import ecgs_router
+from api.user.infrastructure.views.auth import auth_router
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ api = FastAPI(
     version="1.0.0",
 )
 
+api.include_router(auth_router, tags=["Auth"])
 api.include_router(ecgs_router, tags=["ECGs"], prefix="/ecgs")
 
 

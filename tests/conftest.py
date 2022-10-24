@@ -7,6 +7,7 @@ import pytest
 from alembic.command import downgrade
 from alembic.command import upgrade
 from alembic.config import Config
+from pydantic.networks import EmailStr
 from sqlalchemy_utils import create_database
 from sqlalchemy_utils import database_exists
 from sqlmodel import Session
@@ -22,6 +23,13 @@ from api.ecg.infrastructure.repositories.sqlmodel_channel_repository import SQLM
 from api.ecg.infrastructure.repositories.sqlmodel_ecg_repository import SQLModelECGRepository
 from api.main import api
 from api.settings import DATABASE_URL
+from api.user.application.create_access_token import create_access_token
+from api.user.application.password_hash import get_password_hash
+from api.user.domain.user import RoleEnum
+from api.user.domain.user import User
+from api.user.domain.user import UserCreate
+from api.user.domain.user_repository import UserRepository
+from api.user.infrastructure.repositories.sqlmodel_user_repository import SQLModelUserRepository
 
 environ["TESTING"] = "True"
 logging.getLogger("alembic").setLevel(logging.ERROR)
@@ -82,6 +90,11 @@ def channel_repository() -> ChannelRepository:
 
 
 @pytest.fixture
+def user_repository() -> UserRepository:
+    return SQLModelUserRepository()
+
+
+@pytest.fixture
 def new_ecg_data() -> Dict:
     return dict(
         date="2022-10-20 17:25:00",
@@ -106,3 +119,60 @@ def ecg_1(
         json=new_ecg_data,
     )
     return ECG(**response.json())
+
+
+@pytest.fixture
+def new_user_data() -> Dict:
+    return dict(
+        email=EmailStr("email@gmail.com"),
+        password="12345678",
+        role=RoleEnum.USER,
+    )
+
+
+@pytest.fixture
+def new_user(
+        db_sql: Session,
+        user_repository: UserRepository,
+        new_user_data: Dict,
+):
+    def _new_user(
+            email: str,
+            role: RoleEnum = RoleEnum.USER,
+    ) -> User:
+        user_data = UserCreate(**new_user_data)
+        user_data.email = email
+        user_data.role = role
+        user_data.password = get_password_hash(user_data.password)
+        user = user_repository.create(db_sql, new_user=user_data)
+        return user
+
+    yield _new_user
+
+
+@pytest.fixture
+def user_admin(
+        new_user,
+) -> User:
+    return new_user(email="admin@gmail.com", role=RoleEnum.ADMIN)
+
+
+@pytest.fixture
+def user_1(
+        new_user,
+) -> User:
+    return new_user(email="user_1@gmail.com")
+
+
+@pytest.fixture
+def headers_user_admin(
+        user_admin: User,
+) -> Dict[str, str]:
+    return dict(Authorization=f"Bearer {create_access_token(email=user_admin.email)}")
+
+
+@pytest.fixture
+def headers_user_1(
+        user_1: User,
+) -> Dict[str, str]:
+    return dict(Authorization=f"Bearer {create_access_token(email=user_1.email)}")
